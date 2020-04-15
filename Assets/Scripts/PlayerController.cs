@@ -7,9 +7,12 @@ public class PlayerController : MonoBehaviour
     private Rigidbody playerRB;
 
     private Animator playerAnim;
+    public float introSpeed = 10;
 
     public bool isOnGround = true;
     public bool gameOver = false;
+
+    public bool onPlace = false;
 
     public float jumpForce;
     public float gravityModifier;
@@ -29,6 +32,16 @@ public class PlayerController : MonoBehaviour
             playerRB.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
             playerAnim.SetTrigger("Jump_trig");
+        }
+
+        if (!onPlace)
+        {
+            transform.Translate(Vector3.forward * Time.deltaTime * introSpeed);
+        }
+
+        if (transform.position.x >= 0)
+        {
+            onPlace = true;
         }
     }
 
