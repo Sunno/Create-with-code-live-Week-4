@@ -5,8 +5,9 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody playerRB;
-
     private Animator playerAnim;
+    private AudioSource playerAudio;
+
     public float introSpeed = 10;
 
     public bool isOnGround = true;
@@ -16,11 +17,20 @@ public class PlayerController : MonoBehaviour
 
     public float jumpForce;
     public float gravityModifier;
+
+    public ParticleSystem explosionParticle;
+    public ParticleSystem dirtParticle;
+
+    public AudioClip jumpSound;
+
+    public AudioClip crashSound;
+
     // Start is called before the first frame update
     void Start()
     {
         playerAnim = GetComponent<Animator>();
         playerRB = GetComponent<Rigidbody>();
+        playerAudio = GetComponent<AudioSource>();
         Physics.gravity *= gravityModifier;
     }
 
@@ -32,6 +42,8 @@ public class PlayerController : MonoBehaviour
             playerRB.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
             playerAnim.SetTrigger("Jump_trig");
+            dirtParticle.Stop();
+            playerAudio.PlayOneShot(jumpSound, 1f);
         }
 
         if (!onPlace)
@@ -50,6 +62,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isOnGround = true;
+            dirtParticle.Play();
         }
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
@@ -57,6 +70,9 @@ public class PlayerController : MonoBehaviour
             Debug.Log("GAME OVVVEERRRRRRR");
             playerAnim.SetBool("Death_b", true);
             playerAnim.SetInteger("DeathType_int", 1);
+            explosionParticle.Play();
+            dirtParticle.Stop();
+            playerAudio.PlayOneShot(crashSound, 1f);
         }
     }
 }
